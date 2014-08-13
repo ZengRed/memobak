@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="amigo.sshmemo.dao">
+	<class name="Memo" table="tbl_memo">
+		<id name="memoId" column="memoId">
+			<generator class="native" />
+		</id>
+
+		<property name="name" column="name" type="java.lang.String"
+			not-null="true" length="50" />
+		<property name="description" column="description" type="java.lang.String"
+			length="255" />
+		<property name="remindTime" column="remindTime" type="java.util.Date"
+			not-null="true" />
+		<property name="createTime" column="createTime" type="java.util.Date"
+			not-null="true" />
+		<property name="status" column="status" type="java.lang.Integer"
+			not-null="true" />
+			
+		<many-to-one name="user" column="username" class="User"
+			not-null="false" lazy="false">
+		</many-to-one>
+		<many-to-one name="memoType" column="typeId" class="MemoType"
+			not-null="false" lazy="false">
+		</many-to-one>
+
+	</class>
+</hibernate-mapping>

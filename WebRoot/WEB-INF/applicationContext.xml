@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN"
+     "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!-- - Application context definition for JPetStore's business layer. - Contains 
+	bean references to the transaction manager and to the DAOs in - dataAccessContext-local/jta.xml 
+	(see web.xml's "contextConfigLocation"). -->
+<beans>
+
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<property name="driverClass">
+			<value>com.mysql.jdbc.Driver</value>
+		</property>
+		<property name="jdbcUrl">
+			<value>jdbc:mysql://localhost/sshmemo</value>
+		</property>
+		<property name="user">
+			<value>root</value>
+		</property>
+		<property name="password">
+			<value>root</value>
+		</property>
+		<property name="maxPoolSize">
+			<value>20</value>
+		</property>
+		<property name="minPoolSize">
+			<value>1</value>
+		</property>
+		<property name="initialPoolSize">
+			<value>1</value>
+		</property>
+		<property name="maxIdleTime">
+			<value>20</value>
+		</property>
+	</bean>
+
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource">
+			<ref local="dataSource" />
+		</property>
+		<property name="mappingResources">
+			<list>
+				<value>amigo/sshmemo/dao/User.hbm.xml</value>
+				<value>amigo/sshmemo/dao/Memo.hbm.xml</value>
+				<value>amigo/sshmemo/dao/MemoType.hbm.xml</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.format_sql">true</prop>
+				<prop key="hibernate.jdbc.batch_size">20</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory">
+		</property>
+	</bean>
+
+	<bean id="transactionInterceptor"
+		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+		<property name="transactionManager" ref="transactionManager">
+		</property>
+		<property name="transactionAttributes">
+			<props>
+				<prop key="save*">PROPAGATION_REQUIRED</prop>
+				<prop key="update*">PROPAGATION_REQUIRED</prop>
+				<prop key="delete*">PROPAGATION_REQUIRED</prop>
+				<prop key="login*">PROPAGATION_REQUIRED</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean
+		class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+		<property name="beanNames">
+			<list>
+
+			</list>
+		</property>
+		<property name="interceptorNames">
+			<list>
+				<value>transactionInterceptor</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="baseDao" class="amigo.sshmemo.dao.BaseDaoImpl">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+
+	<bean id="userManager" class="amigo.sshmemo.service.user.UserManagerImpl">
+		<property name="dao">
+			<ref bean="baseDao" />
+		</property>
+	</bean>
+	
+	<bean id="memoTypeManager" class="amigo.sshmemo.service.memotype.MemoTypeManagerImpl">
+		<property name="dao">
+			<ref bean="baseDao" />
+		</property>
+		<property name="userManager">
+			<ref bean="userManager" />
+		</property>
+	</bean>
+	
+	<bean id="memoManager" class="amigo.sshmemo.service.memo.MemoManagerImpl">
+		<property name="dao">
+			<ref bean="baseDao" />
+		</property>
+	</bean>
+	
+	
+	<bean id="userAction" class="amigo.sshmemo.action.user.UserAction">
+		<property name="userManager">
+			<ref bean="userManager" />
+		</property>
+	</bean>
+	
+	<bean id="memoTypeAction" class="amigo.sshmemo.action.memotype.MemoTypeAction">
+		<property name="memoTypeManager">
+			<ref bean="memoTypeManager" />
+		</property>
+	</bean>
+	
+	<bean id="memoAction" class="amigo.sshmemo.action.memo.MemoAction">
+		<property name="memoManager">
+			<ref bean="memoManager" />
+		</property>
+		<property name="memoTypeManager">
+			<ref bean="memoTypeManager" />
+		</property>
+	</bean>
+	
+
+</beans>

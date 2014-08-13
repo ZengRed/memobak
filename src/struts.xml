@@ -1,0 +1,56 @@
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+	"http://struts.apache.org/dtds/struts-2.0.dtd">
+
+
+<struts>
+	<!-- 国际化配置 -->
+	<constant name="struts.custom.i18n.resources" value="validationMessages"></constant>
+	<constant name="struts.i18n.encoding" value="UTF-8"></constant>
+
+
+	<include file="struts-default.xml" />
+	<package name="amigo" extends="struts-default">
+	
+		<interceptors>
+			<interceptor name="sessionInterceptor"
+				class="amigo.sshmemo.interceptor.SessionInterceptor">
+			</interceptor>
+			<interceptor-stack name="mydefault"> 
+                <interceptor-ref name="sessionInterceptor" />   
+            </interceptor-stack>  
+		</interceptors>
+		
+		<default-interceptor-ref name="defaultStack" /> 
+		
+		
+		<!-- 配置登录的Action -->
+		<action name="*UserAction" class="userAction" method="{1}">
+			<result name="list">/user/userList.jsp</result>
+			<result name="update">/user/updateUser.jsp</result>
+			<result name="main">/user/main.jsp</result>
+			<result name="login">/user/login.jsp</result>
+			<result name="success">/success.jsp</result>
+			<result name="error">/error.jsp</result>
+		</action>
+
+		<action name="*MemoTypeAction" class="memoTypeAction" method="{1}">
+			<result name="list">/memotype/memoTypeList.jsp</result>
+			<result name="update">/memotype/updateMemoType.jsp</result>
+			<result name="login">/user/login.jsp</result>
+			<interceptor-ref name="defaultStack"/> 
+			<interceptor-ref name="mydefault"/>
+		</action>
+
+		<action name="*MemoAction" class="memoAction" method="{1}">
+			<result name="listRemind">/memo/remindMemoList.jsp</result>
+			<result name="list">/memo/memoList.jsp</result>
+			<result name="update">/memo/updateMemo.jsp</result>
+			<result name="save">/memo/addMemo.jsp</result>
+			<result name="login">/user/login.jsp</result>
+			<interceptor-ref name="defaultStack"/> 
+			<interceptor-ref name="mydefault"/>
+			
+		</action>
+	</package>
+</struts>

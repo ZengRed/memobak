@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="amigo.sshmemo.dao">
+	<class name="User" table="tbl_user">
+		<id name="username" column="username" type="java.lang.String"
+			length="50">
+			<generator class="assigned" />
+		</id>
+
+		<property name="password" column="password" type="java.lang.String"
+			not-null="true" length="50" />
+		<property name="gender" column="gender" length="2" />
+		<property name="birthDate" column="birthDate" type="java.util.Date" />
+		<property name="tel" column="tel" type="java.lang.String"
+			length="255" />
+		<property name="email" column="email" type="java.lang.String"
+			length="255" />
+		<property name="createTime" column="createTime" type="java.util.Date"
+			not-null="true" />
+		<property name="description" column="description" type="java.lang.String"
+			length="255" />
+			
+		<set name="memos" inverse="false" cascade="all-delete-orphan">
+			<key column="username"/>
+			<one-to-many class="Memo"/>
+		</set>
+		
+		<set name="memoTypes" inverse="false" cascade="all">
+			<key column="username"/>
+			<one-to-many class="MemoType"/>
+		</set>
+		
+	</class>
+</hibernate-mapping>
